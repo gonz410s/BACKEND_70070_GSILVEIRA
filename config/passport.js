@@ -16,10 +16,15 @@ const opts = {
   secretOrKey: process.env.JWT_SECRET,
 };
 
-passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
-  User.findById(jwt_payload.sub, (err, user) => {
-    if (err) return done(err, false);
-    if (user) return done(null, user);
-    return done(null, false);
-  });
+passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {
+  try {
+    const user = await User.findById(jwt_payload.sub);
+    if (user) {
+      return done(null, user);
+    } else {
+      return done(null, false);
+    }
+  } catch (err) {
+    return done(err, false);
+  }
 }));
