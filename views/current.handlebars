@@ -1,0 +1,16 @@
+{{!-- Esta vista muestra los datos del usuario actual --}}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos del Usuario</title>
+</head>
+<body>
+    <h1>Datos del Usuario</h1>
+    <p>Email: {{user.email}}</p>
+    <p>Nombre: {{user.first_name}} {{user.last_name}}</p>
+    
+    <a href="/logout">Logout</a>
+</body>
+</html>
