@@ -3,54 +3,36 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
-const { engine } = require('express-handlebars'); // Cambiado aquí
-const sessionRoutes = require('./routes/sessionRoutes'); // Rutas de sesión
-const userRoutes = require('./routes/userRoutes'); // Rutas de usuarios
-require('./config/passport'); // Estrategia de Passport (JWT)
-const path = require('path');
+const path = require('path'); 
+const { engine } = require('express-handlebars');
+const sessionRoutes = require('./routes/sessionRoutes');
+const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+// Inicializar la app
 const app = express();
 
-// Middleware
-app.use(express.json());
-app.use(cookieParser(process.env.JWT_SECRET)); // Firmar cookies con JWT_SECRET
-app.use(passport.initialize());
-
-// Configuración de Handlebars
-app.engine('handlebars', engine()); 
+// Configurar Handlebars
+app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'views')); // Establece el directorio de vistas
+
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Para manejar formularios
+app.use(cookieParser()); // Parsear cookies firmadas
+app.use(passport.initialize()); // Inicializar Passport
+
+// Rutas estáticas para archivos CSS, JS, imágenes, etc.
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Rutas para usuarios y sesiones
+app.use('/api/users', userRoutes); // Rutas relacionadas con usuarios (CRUD)
+app.use('/api/sessions', sessionRoutes); // Rutas relacionadas con sesiones (login, registro, etc.) 
+
 // Conectar a la base de datos MongoDB
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect('mongodb+srv://gonz410:lalala@clustergonza.qd3uj.mongodb.net/integrative_practice?retryWrites=true&w=majority')
 .then(() => console.log('Conectado a MongoDB'))
-.catch(err => console.error(err));
-
-// Rutas
-app.use('/api/users', userRoutes);        // CRUD de usuarios
-app.use('/api/sessions', sessionRoutes);  // Login y autenticación
-
-// Vista para login y usuario actual
-app.get('/login', (req, res) => {
-  const token = req.signedCookies.currentUser;  // Chequear si ya tiene token
-  if (token) {
-    return res.redirect('/current');  // Redirigir al usuario actual si está logueado
-  }
-  res.render('login'); // Renderizar la vista de login
-});
-
-// Vista actual del usuario
-app.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
-  // Renderizar los datos del usuario autenticado
-  res.render('current', { user: req.user });  
-});
-
-// Ruta para logout (borrar cookie)
-app.get('/logout', (req, res) => {
-  res.clearCookie('currentUser');  // Limpiar la cookie firmada
-  res.redirect('/login');          // Redirigir al login
-});
+.catch(err => console.error('Error de conexión:', err));
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 8080;

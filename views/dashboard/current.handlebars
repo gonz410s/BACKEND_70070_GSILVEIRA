@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario</title>
+</head>
+<body>
+    <header>
+        <h1>Bienvenido, {{user.first_name}} {{user.last_name}}</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/api/sessions/logout">Cerrar sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h2>Detalles de tu perfil</h2>
+        <p><strong>Email:</strong> {{user.email}}</p>
+        <p><strong>Rol:</strong> {{user.role}}</p>
+        
+        <h3>Otras Información</h3>
+    </main>
+    <footer>
+        <p>&copy; {{year}} GONZAPP. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>
